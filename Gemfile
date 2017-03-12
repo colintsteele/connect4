@@ -1,6 +1,5 @@
-source 'https://rubygems.org' do
-  gem 'rspec'
-  gem 'ruby2d'
-  gem 'pry'
-  gem 'require_all'
-end
+source 'https://rubygems.org'
+gem 'rspec'
+gem 'gosu'
+gem 'pry'
+gem 'require_all'
