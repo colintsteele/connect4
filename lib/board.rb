@@ -13,11 +13,29 @@ class Board < Gosu::Window
     @slots = Array.new(@tiles_high){ Array.new(@tiles_wide) }
   end
 
-  def print
-    binding.pry
-    puts "\n"
-    puts slots
+  def all_slots(&block)
+    @tiles_wide.times do |row|
+      @tiles_high.times do |column|
+        yield(row, column)
+      end
+    end
   end
+
+  def print_board
+    print "\n"
+    all_slots do |column, row|
+      case @slots[row][column]
+        when 1
+          print("[X]")
+        when 2
+          print("[O]")
+        else
+          print("[-]")
+      end
+      print "\n" if row == @tiles_wide - 1
+    end
+  end
+
 
   def move_right
     return nil if @current_column == (@tiles_wide - 1)
@@ -29,26 +47,25 @@ class Board < Gosu::Window
     @current_column -= 1
   end
 
-  def height_width
-    return @tiles_high, @tiles_wide
-  end
-
   def drop(player, column = @current_column)
     bottom_row = find_bottom(column)
     if bottom_row == 0
       return nil
     else
-      @slots[column][bottom_row - 1] = player
+      @slots[column][bottom_row] = player
     end
   end
 
   def find_bottom(column)
-    @slots[column].length.times do |row|
-      return row if @slots[column][row]
+    @tiles_high.times do |row|
+      return (row - 1) if @slots[column][row]
     end
-    @tiles_high + 1
+    @tiles_high - 1
   end
 
+  def reset
+    @slots = Array.new(@tiles_high){ Array.new(@tiles_wide) }
+  end
   #gosu methods
 
   def draw
@@ -64,9 +81,8 @@ class Board < Gosu::Window
     elsif id == Gosu::KB_LEFT
       move_left
     elsif id == Gosu::KB_DOWN
-      puts drop(1), @current_column
+      drop(1)
     end
   end
-
 end
 
